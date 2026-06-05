@@ -69,15 +69,12 @@ flowchart TD
 *   A host machine running **Linux** (e.g., Ubuntu, Debian, or Raspberry Pi OS).
 *   A free **Tailscale** account.
 
-### Step 1: Install & Set Up
+### Quick Start (One-Line Install)
 
-Clone the repository to your host machine, navigate to the folder, and run the one-step installer script:
+Run the following command to clone the repository and kick off the installer:
 
 ```bash
-git clone https://github.com/Jackson-Brooks/self-host-tool.git
-cd self-host-tool
-chmod +x installer.sh
-sudo ./installer.sh
+git clone https://github.com/Jackson-Brooks/self-host-tool.git && cd self-host-tool && chmod +x installer.sh && sudo ./installer.sh
 ```
 
 ### Step 2: Authenticate Tailscale
