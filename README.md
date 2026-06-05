@@ -68,7 +68,11 @@ flowchart TD
 
 ### Prerequisites
 
-*   A host machine running **Linux** (e.g., Ubuntu, Debian, or Raspberry Pi OS).
+*   A host machine running a supported **Linux distribution**:
+    *   **Ubuntu** (and Ubuntu-derived distros like Linux Mint, Pop!_OS, Zorin OS)
+    *   **Debian**
+    *   **Raspberry Pi OS**
+    *   **Fedora**
 *   A free **Tailscale** account.
 
 ### Quick Start (One-Line Install)
