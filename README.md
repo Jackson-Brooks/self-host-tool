@@ -2,7 +2,7 @@
 
 A private, secure, and beautiful dashboard to orchestrate, deploy, and access self-hosted open-source services on a local Mini PC, Home Server, or VPS securely over your **Tailscale VPN (Tailnet)**.
 
-![Dashboard Preview](image.png)
+![Dashboard Preview](https://github.com/Jackson-Brooks/self-host-tool/releases/download/assets/image.png)
 
 ---
 
