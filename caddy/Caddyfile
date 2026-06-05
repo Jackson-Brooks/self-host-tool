@@ -1,0 +1,45 @@
+{
+    email admin@self-host-tool.com
+    # Local Caddy administration
+    admin :2019
+}
+
+# HTTP gateway for private IP and local access
+:80 {
+    # Proxy backend API requests
+    handle /api/* {
+        reverse_proxy backend:8000
+    }
+
+    # Import dynamic routing configurations for self-hosted apps
+    import /etc/caddy/dynamic/*.caddy
+
+    # Serve Vite SPA compiled static files
+    handle {
+        root * /var/www/html
+        try_files {path} {path}/ /index.html
+        file_server
+    }
+}
+
+# HTTPS gateway with automatic Tailscale SSL
+{$PORTAL_DOMAIN:localhost} {
+    tls {
+        get_certificate tailscale
+    }
+
+    # Proxy backend API requests
+    handle /api/* {
+        reverse_proxy backend:8000
+    }
+
+    # Import dynamic routing configurations for self-hosted apps
+    import /etc/caddy/dynamic/*.caddy
+
+    # Serve Vite SPA compiled static files
+    handle {
+        root * /var/www/html
+        try_files {path} {path}/ /index.html
+        file_server
+    }
+}

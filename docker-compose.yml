@@ -1,0 +1,69 @@
+services:
+  # 1. Frontend SPA compiler
+  frontend-builder:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: selfhost-frontend-builder
+    volumes:
+      # Maps output to shared folder on host
+      - ./frontend/dist:/dist
+
+  # 2. FastAPI Core Manager
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: selfhost-backend
+    volumes:
+      # Main docker socket for application orchestration
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Tailscale socket for reading VPN DNS and connection state
+      - /run/tailscale/tailscaled.sock:/var/run/tailscale/tailscaled.sock
+      # Shared persistent configurations and app data
+      - ./data:/app/data
+    environment:
+      - DATA_DIR=/app/data
+      - TAILSCALE_SOCKET=/var/run/tailscale/tailscaled.sock
+      - HOST_DATA_DIR=${HOST_DIR:-.}/data
+      - PORTAL_DOMAIN=${PORTAL_DOMAIN:-localhost}
+    extra_hosts:
+      # Allows backend container to talk directly to host-network applications (like VS Code Server)
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    depends_on:
+      frontend-builder:
+        condition: service_completed_successfully
+
+  # 3. Caddy Reverse Proxy Gateway
+  caddy:
+    image: caddy:2.7-alpine
+    container_name: selfhost-caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - PORTAL_DOMAIN=${PORTAL_DOMAIN:-localhost}
+    volumes:
+      # Primary Caddyfile rules
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      # Compiled React index assets shared from builder container
+      - ./frontend/dist:/var/www/html
+      # Dynamic reverse-proxy route snippets created by backend
+      - ./data/caddy:/etc/caddy/dynamic
+      # Tailscale socket for automatic HTTPS SSL certificates
+      - /run/tailscale/tailscaled.sock:/var/run/tailscale/tailscaled.sock
+      # Persistent caddy internal data (SSL keys, certificates)
+      - ./data/caddy_data:/data
+      - ./data/caddy_config:/config
+    extra_hosts:
+      # Allows Caddy container to reverse proxy to host-network applications (like VS Code Server)
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+networks:
+  default:
+    name: selfhost-network
+    external: true

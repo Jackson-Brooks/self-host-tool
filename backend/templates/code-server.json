@@ -1,0 +1,20 @@
+{
+  "id": "code-server",
+  "name": "VS Code Server",
+  "description": "Run VS Code in the browser, allowing you to code and run development environments directly on your cloud instance.",
+  "category": "Development",
+  "icon": "code-server",
+  "open_path": "/code/",
+  "fields": [
+    {
+      "key": "PASSWORD",
+      "label": "VS Code Password",
+      "type": "password",
+      "placeholder": "secretpassword",
+      "required": true,
+      "help": "Required. Set the password you will use to log into your VS Code development environment."
+    }
+  ],
+  "compose_template": "version: '3.8'\n\nservices:\n  code-server:\n    image: lscr.io/linuxserver/code-server:latest\n    container_name: selfhost-code-server\n    environment:\n      - PUID=1000\n      - PGID=1000\n      - TZ=Etc/UTC\n      - DEFAULT_WORKSPACE=/config/workspace\n      - PASSWORD={{PASSWORD}}\n    volumes:\n      - {{APP_DATA_DIR}}/config:/config\n      - {{APP_DATA_DIR}}/config/custom-cont-init.d:/custom-cont-init.d\n    restart: unless-stopped\n\nnetworks:\n  default:\n    name: selfhost-network\n    external: true\n",
+  "caddy_template": "handle /code* {\n    @redir {\n        path /code\n    }\n    redir @redir /code/\n\n    uri strip_prefix /code\n    reverse_proxy selfhost-code-server:8443\n}\n"
+}

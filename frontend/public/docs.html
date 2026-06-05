@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Optimization -->
+  <title>Self Host Tool - App Developer Guide</title>
+  <meta name="description" content="A simple and beautiful developer guide to add, test, and publish custom applications to the Self Host Tool App Store registry.">
+  
+  <!-- Premium Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --font-primary: 'Outfit', sans-serif;
+      --font-secondary: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      /* Premium Slate Palette */
+      --bg-dark: #090d16;
+      --bg-base: #0f1424;
+      --bg-card: #141b30;
+      --bg-input: #0b0f1a;
+      --border-subtle: #202b48;
+      --border-active: #38bdf8;
+
+      /* Accents */
+      --accent-sky: #0ea5e9;
+      --accent-blue: #2563eb;
+      --accent-indigo: #6366f1;
+
+      /* Status Colors */
+      --status-green: #10b981;
+      --status-red: #ef4444;
+      --status-orange: #f59e0b;
+
+      /* Texts */
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #475569;
+
+      /* Shadow & Transitions */
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+      --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-primary);
+      font-family: var(--font-primary);
+      overflow-x: hidden;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* Subtle background gradients, removing gamified ambient floaters */
+    .bg-glow-orb-1, .bg-glow-orb-2 {
+      position: fixed;
+      width: 50vw;
+      height: 50vw;
+      border-radius: 50%;
+      z-index: -1;
+      opacity: 0.03;
+      pointer-events: none;
+      filter: blur(160px);
+    }
+
+    .bg-glow-orb-1 {
+      background: var(--accent-sky);
+      top: -10vw;
+      right: -5vw;
+    }
+
+    .bg-glow-orb-2 {
+      background: var(--accent-indigo);
+      bottom: -15vw;
+      left: -10vw;
+    }
+
+    /* Header Styling */
+    .docs-header {
+      background: rgba(9, 13, 22, 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 1rem 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .docs-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1.3rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-family: var(--font-secondary);
+    }
+
+    .docs-logo svg {
+      stroke: var(--accent-sky);
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: var(--transition-smooth);
+      cursor: pointer;
+    }
+
+    .back-btn:hover {
+      background: #151e36;
+      border-color: var(--text-secondary);
+    }
+
+    /* Layout Grid */
+    .docs-container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 5%;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 3rem;
+    }
+
+    /* Sidebar Navigation */
+    .docs-sidebar {
+      position: sticky;
+      top: 100px;
+      height: calc(100vh - 140px);
+      overflow-y: auto;
+      padding-right: 1rem;
+    }
+
+    .docs-sidebar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .docs-sidebar::-webkit-scrollbar-thumb {
+      background: var(--border-subtle);
+      border-radius: 4px;
+    }
+
+    .nav-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      margin-top: 1.5rem;
+    }
+    .nav-title:first-child {
+      margin-top: 0;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .nav-link {
+      display: block;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.95rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      border-left: 2px solid transparent;
+      transition: var(--transition-smooth);
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--accent-sky);
+      background: rgba(14, 165, 233, 0.05);
+      border-left-color: var(--accent-sky);
+      padding-left: 1rem;
+    }
+
+    /* Content Area */
+    .docs-content {
+      max-width: 900px;
+    }
+
+    .section {
+      margin-bottom: 4rem;
+      scroll-margin-top: 100px;
+    }
+
+    h1.main-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+      font-family: var(--font-secondary);
+    }
+
+    p.intro {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    h2.section-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-secondary);
+    }
+
+    p {
+      color: var(--text-secondary);
+      margin-bottom: 1.25rem;
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+
+    /* Cards */
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: var(--transition-smooth);
+    }
+
+    .info-card:hover {
+      border-color: var(--border-active);
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+
+    .card-title {
+      font-family: var(--font-secondary);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent-sky);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-text {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Alert Boxes */
+    .alert-box {
+      border-left: 4px solid var(--accent-sky);
+      background: rgba(14, 165, 233, 0.03);
+      border-radius: 4px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    
+    .alert-box.important {
+      border-left-color: var(--accent-indigo);
+      background: rgba(99, 102, 241, 0.03);
+    }
+
+    .alert-title {
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Beautiful Tables */
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      margin: 2rem 0;
+      background: var(--bg-card);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.01);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05rem;
+      color: var(--text-secondary);
+    }
+
+    td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      color: var(--accent-sky);
+    }
+
+    /* Fenced Code Snippets */
+    .code-container {
+      position: relative;
+      margin: 2rem 0;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .code-header {
+      background: rgba(255, 255, 255, 0.01);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .code-lang {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05rem;
+      color: var(--text-muted);
+    }
+
+    .copy-btn {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition-smooth);
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--accent-sky);
+      border-color: var(--accent-sky);
+    }
+
+    pre {
+      padding: 1.25rem;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    /* List styling */
+    ul, ol {
+      margin-bottom: 1.5rem;
+      padding-left: 1.5rem;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+      .docs-container {
+        grid-template-columns: 1fr;
+      }
+      .docs-sidebar {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Ambient Orbs -->
+  <div class="bg-glow-orb-1"></div>
+  <div class="bg-glow-orb-2"></div>
+
+  <!-- Header -->
+  <header class="docs-header">
+    <a href="/" class="docs-logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+      Self Host Portal
+    </a>
+    <a href="/" class="back-btn" id="backButton">
+      <span style="font-size: 1.1rem; line-height: 0;">←</span> Back to Portal
+    </a>
+  </header>
+
+  <!-- Docs Grid Container -->
+  <div class="docs-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="docs-sidebar" aria-label="Documentation Navigation">
+      <nav>
+        <div class="nav-title">Getting Started</div>
+        <ul class="nav-list">
+          <li><a href="#intro" class="nav-link active">Introduction</a></li>
+          <li><a href="#architecture" class="nav-link">Portal Architecture</a></li>
+        </ul>
+        
+        <div class="nav-title">App Templates</div>
+        <ul class="nav-list">
+          <li><a href="#schema" class="nav-link">JSON Schema</a></li>
+          <li><a href="#variables" class="nav-link">Variables Injection</a></li>
+          <li><a href="#fields" class="nav-link">Custom Input Fields</a></li>
+        </ul>
+        
+        <div class="nav-title">Step-by-Step</div>
+        <ul class="nav-list">
+          <li><a href="#create-app" class="nav-link">How to Add an App</a></li>
+          <li><a href="#verifying" class="nav-link">Testing & Publishing</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="docs-content">
+      
+      <!-- Intro Section -->
+      <section id="intro" class="section">
+        <h1 class="main-title">Developer Guide</h1>
+        <p class="intro">Learn how to customize, expand, and add new services to the Self Host Tool App Store registry using declarative JSON templates.</p>
+        
+        <div class="info-card" style="margin-top: 1.5rem;">
+          <h3 class="card-title">📖 Declarative App Store Philosophy</h3>
+          <p class="card-text" style="margin-bottom: 0;">The portal registry is entirely template-driven. Instead of writing custom installation code, you define your application in a single JSON template file. The portal engine reads this file, renders a configurations form, configures reverse-proxy routing rules, and launches the container stack automatically.</p>
+        </div>
+      </section>
+
+      <!-- Architecture Section -->
+      <section id="architecture" class="section">
+        <h2 class="section-title">🔌 Portal Architecture</h2>
+        <p>The Self Host Portal uses a unified pipeline that orchestrates the lifetime of all applications:</p>
+        
+        <div class="grid-cards">
+          <div class="info-card">
+            <h4 class="card-title">📦 Docker Compose Sandbox</h4>
+            <p class="card-text">Every application runs in an isolated container. They connect to the shared <code>selfhost-network</code> Docker bridge, maintaining network security.</p>
+          </div>
+          <div class="info-card">
+            <h4 class="card-title">🛡️ Caddy Reverse Proxy</h4>
+            <p class="card-text">Caddy routes incoming requests dynamically to your container using service DNS. Port exposures to the host system are completely blocked.</p>
+          </div>
+          <div class="info-card">
+            <h4 class="card-title">🔑 Zero-Config Tailscale SSL</h4>
+            <p class="card-text">Tailscale manages VPN connection and dynamic DNS, securing all routes (HTTP/HTTPS) automatically without exposing router ports.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- JSON Schema Section -->
+      <section id="schema" class="section">
+        <h2 class="section-title">📄 JSON Schema Definition</h2>
+        <p>Each application is defined by a JSON file saved in the <code>backend/templates/</code> directory. Below is the blueprint of required fields:</p>
+        
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Field Name</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Required</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>id</code></td>
+                <td><code>string</code></td>
+                <td>Unique URL-friendly ID for the app (e.g. <code>jellyfin</code>).</td>
+                <td><strong>Yes</strong></td>
+              </tr>
+              <tr>
+                <td><code>name</code></td>
+                <td><code>string</code></td>
+                <td>Human-readable label displayed on application cards.</td>
+                <td><strong>Yes</strong></td>
+              </tr>
+              <tr>
+                <td><code>description</code></td>
+                <td><code>string</code></td>
+                <td>Brief summary outlining what the application does.</td>
+                <td><strong>Yes</strong></td>
+              </tr>
+              <tr>
+                <td><code>category</code></td>
+                <td><code>string</code></td>
+                <td>Store categorization (e.g. <code>Media</code>, <code>Network</code>, <code>Development</code>).</td>
+                <td><strong>Yes</strong></td>
+              </tr>
+              <tr>
+                <td><code>icon</code></td>
+                <td><code>string</code></td>
+                <td>An emoji or CSS icon class representative of the app.</td>
+                <td><strong>Yes</strong></td>
+              </tr>
+              <tr>
+                <td><code>open_path</code></td>
+                <td><code>string</code></td>
+                <td>The URL subpath prefix (e.g. <code>/files/</code>, <code>/jellyfin/</code>).</td>
+                <td><strong>Yes</strong></td>
+              </tr>
+              <tr>
+                <td><code>fields</code></td>
+                <td><code>array</code></td>
+                <td>Custom user inputs collected during setup (e.g. passwords).</td>
+                <td>No</td>
+              </tr>
+              <tr>
+                <td><code>compose_template</code></td>
+                <td><code>string</code></td>
+                <td>Multi-line string block representing the <code>docker-compose.yml</code> file.</td>
+                <td><strong>Yes</strong></td>
+              </tr>
+              <tr>
+                <td><code>caddy_template</code></td>
+                <td><code>string</code></td>
+                <td>Caddy routing blocks directing traffic to the container.</td>
+                <td><strong>Yes</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Variables Injection Section -->
+      <section id="variables" class="section">
+        <h2 class="section-title">🔄 Variables Injection</h2>
+        <p>The backend portal engine automatically substitutes context variables inside your templates when rendering the container configurations:</p>
+        
+        <div class="alert-box">
+          <h4 class="alert-title">⚙️ Built-In Context Variables</h4>
+          <ul style="margin: 0.5rem 0 0; padding-left: 1.25rem;">
+            <li><code>{{APP_DATA_DIR}}</code>: Absolute path to the app's persistent storage folder (e.g., <code>data/apps/my-app</code>).</li>
+            <li><code>{{DATA_DIR}}</code>: The main shared data directory path on the host.</li>
+            <li><code>{{PORTAL_DOMAIN}}</code>: The current VPN domain or IP address (e.g. <code>ubuntu-desktop.tail5cda40.ts.net</code>).</li>
+          </ul>
+        </div>
+        
+        <p>Any parameter you define in the <code>fields</code> array (e.g. <code>PASSWORD</code>) is also injected via brackets (e.g. <code>{{PASSWORD}}</code>).</p>
+      </section>
+
+      <!-- Custom Fields Section -->
+      <section id="fields" class="section">
+        <h2 class="section-title">🎛️ Custom Input Fields</h2>
+        <p>If your application requires custom credentials or setup parameters, define them in the <code>fields</code> array. The dashboard UI will dynamically compile these into a configuration form:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span class="code-lang">JSON</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code>"fields": [
+  {
+    "key": "PASSWORD",
+    "label": "VS Code Password",
+    "type": "password",
+    "placeholder": "secretpassword",
+    "required": true,
+    "help": "Set the password you will use to log into VS Code."
+  }
+]</code></pre>
+        </div>
+      </section>
+
+      <!-- Step-by-Step Section -->
+      <section id="create-app" class="section">
+        <h2 class="section-title">🛠️ How to Add a New App</h2>
+        <p>Follow these simple steps to integrate a new application into the portal:</p>
+        
+        <ol>
+          <li>
+            <strong>Design the Template:</strong> Create a JSON file named <code>&lt;app-id&gt;.json</code> using the template format.
+            <div class="code-container">
+              <div class="code-header">
+                <span class="code-lang">Example Template (jellyfin.json)</span>
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+              </div>
+              <pre><code>{
+  "id": "jellyfin",
+  "name": "Jellyfin",
+  "description": "Free Software Media System that puts you in control of managing and streaming your media.",
+  "category": "Media",
+  "icon": "🎬",
+  "open_path": "/jellyfin/",
+  "fields": [],
+  "compose_template": "version: '3.8'\n\nservices:\n  jellyfin:\n    image: jellyfin/jellyfin:latest\n    container_name: selfhost-jellyfin\n    volumes:\n      - {{APP_DATA_DIR}}/config:/config\n      - {{APP_DATA_DIR}}/cache:/cache\n      - {{DATA_DIR}}:/media\n    restart: unless-stopped\n\nnetworks:\n  default:\n    name: selfhost-network\n    external: true\n",
+  "caddy_template": "handle /jellyfin* {\n    reverse_proxy selfhost-jellyfin:8096\n}\n"
+}</code></pre>
+            </div>
+          </li>
+          <li><strong>Save the File:</strong> Store the file in the <code>backend/templates/</code> directory.</li>
+          <li><strong>Test Locally:</strong> Refresh the Dashboard, navigate to the <strong>App Store</strong>, find your card, configure it, and click <strong>Deploy Stack</strong>.</li>
+        </ol>
+      </section>
+
+      <!-- Verifying Section -->
+      <section id="verifying" class="section">
+        <h2 class="section-title">🧪 Verifying and Publishing</h2>
+        
+        <div class="alert-box important">
+          <h4 class="alert-title">⚠️ Important: State Isolation Rule</h4>
+          <p class="card-text">Always mount database or configuration directories inside <code>{{APP_DATA_DIR}}</code> on the host system. This ensures that if the user decides to uninstall the app, all configuration logs and container states are removed without leaving orphaned files.</p>
+        </div>
+
+        <p>Once you verify that the container starts up and that Caddy proxies paths cleanly, you have two ways to publish or deploy your application template:</p>
+
+        <div class="grid-cards" style="margin-top: 1.5rem;">
+          <div class="info-card">
+            <h4 class="card-title">🌎 Add App for Everyone (GitHub Pull Request)</h4>
+            <p class="card-text">To share your app template with the community so any installer user can access it:</p>
+            <ol style="margin-top: 0.5rem; padding-left: 1.25rem;">
+              <li>Fork the official repository on GitHub: <code>https://github.com/Jackson-Brooks/self-host-tool</code>.</li>
+              <li>Commit your custom JSON template file inside the <code>backend/templates/</code> directory of your fork.</li>
+              <li>Submit a <strong>Pull Request (PR)</strong> to the <code>main</code> branch of the parent repository.</li>
+              <li>Once reviewed and merged by the maintainer, it will be automatically fetched for all users on update.</li>
+            </ol>
+          </div>
+          
+          <div class="info-card">
+            <h4 class="card-title">🔒 Add App for Yourself (Local / Private App)</h4>
+            <p class="card-text">To test the app locally or run private custom applications without submitting them to GitHub:</p>
+            <ol style="margin-top: 0.5rem; padding-left: 1.25rem;">
+              <li>Connect to your running instance host VM via SSH/SFTP or open the integrated VS Code Server workspace.</li>
+              <li>Create or upload your custom <code>&lt;app-id&gt;.json</code> file directly into the <code>backend/templates/</code> directory.</li>
+              <li>Open your dashboard and refresh the browser. The new application card will instantly load in your App Store catalog.</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // Copy code snippet to clipboard
+    function copyCode(btn) {
+      const code = btn.closest('.code-container').querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const oldText = btn.innerText;
+        btn.innerText = 'Copied!';
+        btn.style.color = 'var(--status-green)';
+        btn.style.borderColor = 'var(--status-green)';
+        setTimeout(() => {
+          btn.innerText = oldText;
+          btn.style.color = '';
+          btn.style.borderColor = '';
+        }, 2000);
+      });
+    }
+
+    // Scroll Spy & Navigation Highlighting
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.section');
+
+    function highlightSection() {
+      let currentSectionId = '';
+      const scrollPos = window.scrollY + 120;
+
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.offsetHeight;
+        if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+          currentSectionId = section.getAttribute('id');
+        }
+      });
+
+      if (!currentSectionId && sections.length > 0) {
+        currentSectionId = sections[0].getAttribute('id');
+      }
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${currentSectionId}`) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', highlightSection);
+    window.addEventListener('load', highlightSection);
+  </script>
+</body>
+</html>

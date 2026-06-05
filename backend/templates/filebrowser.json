@@ -1,0 +1,11 @@
+{
+  "id": "filebrowser",
+  "name": "File Browser",
+  "description": "File Browser is a lightweight web-based file manager that lets you manage files on your host system directly from the browser. (Default credentials: admin / admin)",
+  "category": "Network",
+  "icon": "📁",
+  "open_path": "/files/",
+  "fields": [],
+  "compose_template": "version: '3.8'\n\nservices:\n  filebrowser:\n    image: filebrowser/filebrowser:latest\n    container_name: selfhost-filebrowser\n    command: -d /database/filebrowser.db -b /files\n    volumes:\n      - {{DATA_DIR}}:/srv\n      - {{APP_DATA_DIR}}/database:/database\n      - {{APP_DATA_DIR}}/config:/config\n    restart: unless-stopped\n\nnetworks:\n  default:\n    name: selfhost-network\n    external: true\n",
+  "caddy_template": "handle /files* {\n    @redir {\n        path /files\n    }\n    redir @redir /files/\n\n    uri strip_prefix /files\n    reverse_proxy selfhost-filebrowser:80\n}\n"
+}

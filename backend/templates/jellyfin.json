@@ -1,0 +1,11 @@
+{
+  "id": "jellyfin",
+  "name": "Jellyfin",
+  "description": "Jellyfin is a free software media system that puts you in control of managing and streaming your media files (movies, shows, music).",
+  "category": "Media",
+  "icon": "🎬",
+  "open_path": "/jellyfin/",
+  "fields": [],
+  "compose_template": "version: '3.8'\n\nservices:\n  jellyfin:\n    image: jellyfin/jellyfin:latest\n    container_name: selfhost-jellyfin\n    volumes:\n      - {{APP_DATA_DIR}}/config:/config\n      - {{APP_DATA_DIR}}/cache:/cache\n      - {{APP_DATA_DIR}}/media:/media\n    restart: unless-stopped\n\nnetworks:\n  default:\n    name: selfhost-network\n    external: true\n",
+  "caddy_template": "handle /jellyfin* {\n    reverse_proxy selfhost-jellyfin:8096\n}\n"
+}

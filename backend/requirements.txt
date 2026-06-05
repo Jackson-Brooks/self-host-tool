@@ -1,0 +1,6 @@
+fastapi==0.111.0
+uvicorn==0.30.1
+docker==7.1.0
+psutil==5.9.8
+pydantic==2.7.4
+aiofiles==23.2.1
